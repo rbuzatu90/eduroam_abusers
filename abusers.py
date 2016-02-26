@@ -54,7 +54,8 @@ def main():
     mac = subparser.add_parser("mac")
     user = subparser.add_parser("user")
     mac.add_argument("-m", "--mac", required=True, help="The MAC to search for", type=str)
-    mac.add_argument("-d", "--days-back", required=False, help="The MAC to search for", type=int, default=0)
+    mac.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=0)
+    mac.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
     args = parser.parse_args()
 
     global logstash_url, now
