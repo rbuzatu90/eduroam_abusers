@@ -52,10 +52,11 @@ def main():
     parser = ArgumentParser(description="Easy logs")
     subparser = parser.add_subparsers(title="Search options", dest="subcommand")
     mac = subparser.add_parser("mac")
+    auto = subparser.add_parser("auto")
     user = subparser.add_parser("user")
     mac.add_argument("-m", "--mac", required=True, help="The MAC to search for", type=str)
     mac.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=0)
-    mac.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
+    auto.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
     args = parser.parse_args()
 
     global logstash_url, now
@@ -66,7 +67,9 @@ def main():
         search_for_mac(args.days_back, args.mac)
     if args.subcommand == "user":
         search_for_user(args.days_back, args.user)
-
+    if args.subcommand == "auto":
+        for user in get_abusers(args.limit):
+            search_for_mac(2, user)
 
 if __name__ == '__main__':
         main()
