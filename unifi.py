@@ -27,7 +27,7 @@ def bytes2h(size):
    s = round(size/p,2)
    return '%s %s' % (s,size_name[i])
 
-def proto(size):
+def h2bytes(size):
     new_size = int(search(r'\d+', size).group())
     str_part= search(r'[kmgtb]+', size.lower()).group()
     size_name = ["b", "kb", "mb", "gb", "gb", "tb"]
@@ -44,10 +44,7 @@ def get_abusers(limit):
     response = urllib2.urlopen(req2)
     all_users = json.loads(response.read())
     for user in all_users['data']:
-        if user['stat']:
-            try:
-                print user['hostname'], user['oui'], hsize(user['stat']['tx_bytes']), hsize(user['stat']['rx_bytes'])
-            except:
-                print "Missing some valuess", user['oui'], hsize(user['stat']['tx_bytes']), hsize(user['stat']['rx_bytes'])
-
-
+         if user.has_key('oui') and user.has_key('hostname') and user.has_key('stat'):
+            print user['oui'], user['hostname'], bytes2h(user['stat']['tx_bytes']), bytes2h(user['stat']['rx_bytes'])
+         else:
+            print "Missing some values", user['oui']
