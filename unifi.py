@@ -41,7 +41,7 @@ def h2bytes(size):
     str_part= search(r'[kmgtb]+', size.lower()).group()
     size_name = ["b", "kb", "mb", "gb", "gb", "tb"]
     power = size_name.index(str_part)
-    val = new_size * 1024 ** power
+    val = 1024 ** power
     size = new_size * val
     return size
 
@@ -59,8 +59,9 @@ def get_abusers(limit):
     user_no_value = 0
     for user in all_users['data']:
         if user.has_key('oui') and user.has_key('hostname') and user.has_key('stat'):
-            abusers.append(user['mac'])
-            print user['oui'], user['hostname'], bytes2h(user['stat']['tx_bytes']), bytes2h(user['stat']['rx_bytes'])
+            if user['stat']['rx_bytes'] >= h2bytes(limit):
+                abusers.append(user['mac'])
+                print user['oui'], user['hostname'], bytes2h(user['stat']['tx_bytes']), bytes2h(user['stat']['rx_bytes'])
         else:
             print "Missing some values on user", user['oui']
             user_no_value += 1
