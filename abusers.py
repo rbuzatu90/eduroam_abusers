@@ -57,6 +57,7 @@ def main():
     mac.add_argument("-m", "--mac", required=True, help="The MAC to search for", type=str)
     mac.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=0)
     auto.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
+    auto.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=2)
     args = parser.parse_args()
 
     global logstash_url, now
@@ -68,8 +69,11 @@ def main():
     if args.subcommand == "user":
         search_for_user(args.days_back, args.user)
     if args.subcommand == "auto":
+        abusers = []
         for user in get_abusers(args.limit):
-            search_for_mac(2, user)
-
+            x = search_for_mac(args.days_back, user)
+            if x:
+                abusers.append(x)
+        print abusers
 if __name__ == '__main__':
         main()

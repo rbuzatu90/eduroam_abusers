@@ -57,13 +57,16 @@ def get_abusers(limit):
     all_users = json.loads(response.read())
     abusers = []
     user_no_value = 0
+    user_count = 0
     for user in all_users['data']:
         if user.has_key('oui') and user.has_key('hostname') and user.has_key('stat'):
             if user['stat']['rx_bytes'] >= h2bytes(limit):
                 abusers.append(user['mac'])
+                user_count += 1
                 print user['oui'], user['hostname'], bytes2h(user['stat']['tx_bytes']), bytes2h(user['stat']['rx_bytes'])
         else:
             print "Missing some values on user", user['oui']
             user_no_value += 1
     print "Total users with missing values", user_no_value
+    print "Total user count that exceed", limit, "limit is", user_count
     return abusers
