@@ -14,20 +14,20 @@ def search_for_mac(days_back, mac):
     new_mac = 'mac:("%s")' % mac
     search_mac['query']['filtered']['filter']['bool']['must'][2]['fquery']['query']['query_string']['query'] = new_mac
     query_json = json.dumps(search_mac)
+    users = {}
     for day_ago in range(days_back, -1, -1):
         logstash_url2 = "%slogstash-%d.%.2d.%.2d/_search?pretty=true" % (logstash_url, now.year, now.month, now.day-day_ago)
         req = urllib2.Request(logstash_url2, query_json, {'Content-Type': 'application/json'})
         f = urllib2.urlopen(req)
         raw_response = f.read()
         response = json.loads(raw_response)
-        users = {}
         for hit in response['hits']['hits']:
             if hit['_source']['user'] not in users:
                 users[hit['_source']['user']] = 1
             else:
                 users[hit['_source']['user']] += 1
             print "Found user", hit['_source']['user'], "associated at AP", hit['_source']['ap-name']
-    print users
+    return users
 
 def search_for_user(days_back, user): # minor fix needed
 
