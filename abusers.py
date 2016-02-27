@@ -1,13 +1,13 @@
 import urllib2
 import datetime
 import json
-import argparse
 from argparse import ArgumentParser
 from unifi import get_abusers
-
+import logging
 
 def search_for_mac(days_back, mac):
 
+    logging.debug("Searching for MAC %s", mac)
     ago = datetime.timedelta(hours=24)
     offset = (now - ago).isoformat()
     search_mac = {"query":{"filtered":{"query":{"bool":{"should":[{"query_string":{"query":"*"}}]}},"filter":{"bool":{"must":[{"range":{"@timestamp":{"from":"%s+03" % (offset, ), "to":"now"}}},{"fquery":{"query":{"query_string":{"query":"tags:(\"eduroam\")"}},"_cache":"true"}},{"fquery":{"query":{"query_string":{"query":"mac:(\"whatever\")"}},"_cache":"true"}}]}}}},"highlight":{"fields":{},"fragment_size":2147483647,"pre_tags":["@start-highlight@"],"post_tags":["@end-highlight@"]},"size":1000,"sort":[{"@timestamp":{"order":"desc","ignore_unmapped":"true"}},{"@timestamp":{"order":"desc","ignore_unmapped":"true"}}]}
@@ -26,7 +26,7 @@ def search_for_mac(days_back, mac):
                 users[hit['_source']['user']] = 1
             else:
                 users[hit['_source']['user']] += 1
-            print "Found user", hit['_source']['user'], "associated at AP", hit['_source']['ap-name']
+            logging.info("Found user {user} associated at {ap}".format(user=hit['_source']['user'], ap=hit['_source']['ap-name']))
     return users
 
 def search_for_user(days_back, user): # minor fix needed
@@ -50,6 +50,7 @@ def search_for_user(days_back, user): # minor fix needed
 def main():
 
     parser = ArgumentParser(description="Easy logs")
+    parser.add_argument('--verbose', '-v', action='count', default=None, help="The verbosity level. More v's means more logging")
     subparser = parser.add_subparsers(title="Search options", dest="subcommand")
     mac = subparser.add_parser("mac")
     auto = subparser.add_parser("auto")
@@ -59,6 +60,15 @@ def main():
     auto.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
     auto.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=2)
     args = parser.parse_args()
+
+    if args.verbose is not None:
+        if args.verbose > 4:
+            log_level = 10
+        else:
+            log_level = 50 - args.verbose * 10
+    else:
+        log_level = 100
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=log_level)
 
     global logstash_url, now
     logstash_url="http://10.9.0.60:9200/"
@@ -75,5 +85,6 @@ def main():
             if x:
                 abusers.append(x)
         print abusers
+
 if __name__ == '__main__':
         main()

@@ -4,6 +4,7 @@ import ssl
 import json
 import math
 from re import search
+import logging
 ssl._create_default_https_context = ssl._create_unverified_context
 
 global login_url, data_url, data
@@ -13,12 +14,13 @@ data = '{"username":"admin","password":"aihechahtahLieX8shie","strict":true}'
 
 def get_cookie():
 
+    logging.debug('Getting cookie')
     cj = CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     try:
         response = opener.open(login_url, data, timeout=5)
     except:
-        print "Networking issues"
+        logging.critical("Networking issues")
         return
     content = response.read()
     return response.headers.get('Set-Cookie')
@@ -53,6 +55,7 @@ def get_abusers(limit):
         return
     req2 = urllib2.Request(data_url)
     req2.add_header('Cookie', my_cookie)
+    logging.debug("Reading from HTTP stream, please wait")
     response = urllib2.urlopen(req2)
     all_users = json.loads(response.read())
     abusers = []
@@ -63,10 +66,11 @@ def get_abusers(limit):
             if user['stat']['rx_bytes'] >= h2bytes(limit):
                 abusers.append(user['mac'])
                 user_count += 1
-                print user['oui'], user['hostname'], bytes2h(user['stat']['tx_bytes']), bytes2h(user['stat']['rx_bytes'])
+                logging.info("Abuser OUI {oui}, hostname {hostname}, MAC {mac} uploaded size {tx}, downloaded size {rx}"\
+                             .format(oui=user['oui'], hostname=user['hostname'], mac=user['mac'], tx=bytes2h(user['stat']['tx_bytes']), rx=bytes2h(user['stat']['rx_bytes'])))
         else:
-            print "Missing some values on user", user['oui']
+            logging.debug("Missing some values on user {user}".format(user=user['oui']))
             user_no_value += 1
-    print "Total users with missing values", user_no_value
-    print "Total user count that exceed", limit, "limit is", user_count
+    logging.info("Total users with missing values {no}".format(no=user_no_value))
+    logging.info("Total user count that exceed {limit} limit is {count}".format(limit=limit, count=user_count))
     return abusers
