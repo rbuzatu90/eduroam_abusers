@@ -15,5 +15,5 @@
 
 ### Configuration ###
 
-* Use -P as argument in order to set the password for furthure uses
+* Use -P as argument in order to set the password for further uses
 
