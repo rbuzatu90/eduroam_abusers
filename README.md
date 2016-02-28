@@ -1,5 +1,8 @@
 # README #
 
+### Overview ###
+    
+ * The app can help network administrators to take notice of users that exceed certain amount of network traffic
 
 ### How do I get set up? ###
 
