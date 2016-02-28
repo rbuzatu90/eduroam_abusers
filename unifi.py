@@ -5,20 +5,23 @@ import json
 import math
 from re import search
 import logging
+from keyring import get_password
 ssl._create_default_https_context = ssl._create_unverified_context
 
+app_name = 'eduroam_abusers'
 global login_url, data_url, data
 login_url = 'https://10.3.0.2:8443/api/login'
 data_url = 'https://10.3.0.2:8443/api/s/default/stat/alluser?pretty=true'
-data = '{"username":"admin","password":"aihechahtahLieX8shie","strict":true}'
+data = {"username":"admin","password":"password","strict":"true"}
 
 def get_cookie():
 
     logging.debug('Getting cookie')
     cj = CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    data['password']= str(get_password(app_name, "unifi"))
     try:
-        response = opener.open(login_url, data, timeout=5)
+        response = opener.open(login_url, str(data), timeout=5)
     except:
         logging.critical("Networking issues")
         return

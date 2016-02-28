@@ -4,6 +4,8 @@ import json
 from argparse import ArgumentParser
 from unifi import get_abusers
 import logging
+import keyring
+import getpass
 
 def search_for_mac(days_back, mac):
 
@@ -49,8 +51,11 @@ def search_for_user(days_back, user): # minor fix needed
 
 def main():
 
+    app_name = "eduroam_abusers"
+
     parser = ArgumentParser(description="Easy logs")
     parser.add_argument('--verbose', '-v', action='count', default=None, help="The verbosity level. More v's means more logging")
+    parser.add_argument("-P", "--password-prompt", default=False, action="store_true")
     subparser = parser.add_subparsers(title="Search options", dest="subcommand")
     mac = subparser.add_parser("mac")
     auto = subparser.add_parser("auto")
@@ -60,6 +65,17 @@ def main():
     auto.add_argument("-l", "--limit", required=False, help="Get users which have download more then X bytes", type=str, default="5GB")
     auto.add_argument("-d", "--days-back", required=False, help="Get logs from X days ago", type=int, default=2)
     args = parser.parse_args()
+
+    password = None
+    if args.password_prompt:
+        password = getpass.getpass()
+        keyring.set_password(app_name, "unifi", password)
+
+    else:
+        password = keyring.get_password(app_name, "unifi")
+        if password is None:
+            logging.critical("Enter a password")
+            return
 
     if args.verbose is not None:
         if args.verbose > 4:
