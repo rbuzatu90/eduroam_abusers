@@ -96,10 +96,12 @@ def main():
         search_for_user(args.days_back, args.user)
     if args.subcommand == "auto":
         abusers = []
-        for user in get_abusers(args.limit):
-            x = search_for_mac(args.days_back, user)
-            if x:
-                abusers.append(x)
+        all_abusers = get_abusers(args.limit)
+        if all_abusers:
+            for user in all_abusers:
+                x = search_for_mac(args.days_back, user)
+                if x:
+                    abusers.append(x)
         print abusers
 
 if __name__ == '__main__':

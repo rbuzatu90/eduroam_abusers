@@ -23,7 +23,7 @@ def get_cookie():
     try:
         response = opener.open(login_url, str(data), timeout=5)
     except:
-        logging.critical("Networking issues")
+        logging.critical("Networking issues or incorrect password")
         return
     content = response.read()
     return response.headers.get('Set-Cookie')
