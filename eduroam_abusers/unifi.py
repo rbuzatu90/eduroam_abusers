@@ -6,6 +6,7 @@ import math
 from re import search
 import logging
 from keyring import get_password
+from eduroam_abusers import *
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -17,8 +18,11 @@ def get_cookie():
     data['password']= str(get_password(app_name, "unifi"))
     try:
         response = opener.open(login_url, str(data), timeout=5)
-    except:
-        logging.critical("Networking issues or incorrect password")
+    except urllib2.URLError as e:
+        if e.reason == "Bad Request":
+            logging.critical("Bad password")
+        if "timed out" in e.reason:
+            logging.critical("Networking issue")
         return
     content = response.read()
     return response.headers.get('Set-Cookie')
