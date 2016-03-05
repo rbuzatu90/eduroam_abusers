@@ -1,10 +1,14 @@
 import urllib2
 import datetime
 import json
+import logging
+
+from eduroam_abusers import *
 
 def search_for_mac(days_back, mac):
 
     logging.debug("Searching for MAC %s", mac)
+    now = datetime.datetime.now()
     ago = datetime.timedelta(hours=24)
     offset = (now - ago).isoformat()
     search_mac = {"query":{"filtered":{"query":{"bool":{"should":[{"query_string":{"query":"*"}}]}},"filter":{"bool":{"must":[{"range":{"@timestamp":{"from":"%s+03" % (offset, ), "to":"now"}}},{"fquery":{"query":{"query_string":{"query":"tags:(\"eduroam\")"}},"_cache":"true"}},{"fquery":{"query":{"query_string":{"query":"mac:(\"whatever\")"}},"_cache":"true"}}]}}}},"highlight":{"fields":{},"fragment_size":2147483647,"pre_tags":["@start-highlight@"],"post_tags":["@end-highlight@"]},"size":1000,"sort":[{"@timestamp":{"order":"desc","ignore_unmapped":"true"}},{"@timestamp":{"order":"desc","ignore_unmapped":"true"}}]}
@@ -30,8 +34,9 @@ def search_for_mac(days_back, mac):
             logging.info("Found user {user} associated at {ap}".format(user=hit['_source']['user'], ap=hit['_source']['ap-name']))
     return users
 
-def search_for_user(days_back, user): # minor fix needed
+def search_for_user(days_back, user):
 
+    # FIXME: Finish implement
     ago = datetime.timedelta(hours=24)
     offset = (now - ago).isoformat()
     search_user = {"query":{"filtered":{"query":{"bool":{"should":[{"query_string":{"query":"*"}}]}},"filter":{"bool":{"must":[{"range":{"@timestamp":{"from":1456014984840,"to":1456187784840}}},{"fquery":{"query":{"query_string":{"query":"tags:(\"eduroam\")"}},"_cache":"true"}},{"fquery":{"query":{"query_string":{"query":"mac:(\"28:cf:e9:19:f1:57\")"}},"_cache":"true"}}]}}}},"highlight":{"fields":{},"fragment_size":2147483647,"pre_tags":["@start-highlight@"],"post_tags":["@end-highlight@"]},"size":500,"sort":[{"@timestamp":{"order":"desc","ignore_unmapped":"true"}},{"@timestamp":{"order":"desc","ignore_unmapped":"true"}}]}

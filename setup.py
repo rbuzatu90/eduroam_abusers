@@ -18,5 +18,5 @@ setup(
             'abusers = eduroam_abusers.main:main',
         ]
     },
-    install_requires=["keyring"],
+    install_requires=["keyring". "keyrings.alt"],
 )

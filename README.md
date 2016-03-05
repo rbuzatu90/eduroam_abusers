@@ -16,13 +16,14 @@
 ### Configuration ###
 
 * Use -P as argument in order to set the password for further uses
+* Use -v for increased verbosity level. More 'v's means more verbosity
 
 ### Examples ###
 
  * List users that exceed 50GB size for download trafic
   
-  main.py auto -l 50gb
+  /bin/abusers -v auto -l 50gb
   
  * Search for user using MAC address and go back 5 days in time
   
-  main.py mac -m 11:22:33:44:55:66 -d 5
+  abusers -vvvv mac -m 11:22:33:44:55:66 -d 5

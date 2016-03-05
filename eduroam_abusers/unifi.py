@@ -8,11 +8,6 @@ import logging
 from keyring import get_password
 ssl._create_default_https_context = ssl._create_unverified_context
 
-app_name = 'eduroam_abusers'
-global login_url, data_url, data
-login_url = 'https://10.3.0.2:8443/api/login'
-data_url = 'https://10.3.0.2:8443/api/s/default/stat/alluser?pretty=true'
-data = {"username":"admin","password":"password","strict":"true"}
 
 def get_cookie():
 
