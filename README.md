@@ -10,8 +10,8 @@
  * Change to the eduroam_abusers directory
  * Clone the code from bitbucket: git clone https://rbuzatu90@bitbucket.org/rbuzatu90/eduroam_abusers.git
  * Activate the virtualenv defined before: source bin/activate
- * Install the necessary requirements: pip install -r requirements.txt
- * At this point you can use this tool by calling: main.py auto
+ * Register the code to the virtualenv: bin/python setup.py develop
+ * At this point you can use this tool by calling: bin/abusers
 
 ### Configuration ###
 
