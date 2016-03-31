@@ -1,0 +1,6 @@
+.idea
+edu
+*.pyc
+eduroam_abusers.egg-info
+*.egg
+test
