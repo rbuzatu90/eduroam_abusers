@@ -1,5 +1,8 @@
 import os
+import ssl
+
 from setuptools import setup
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def read(fname):
     if os.path.exists(fname):
